@@ -11,6 +11,6 @@ namespace Default
         public Button button => GetComponent<Button>();
         
         [HideInInspector]
-        public TMP_Text label => GetComponent<TMP_Text>();
+        public TMP_Text label => GetComponentInChildren<TMP_Text>(true);
     }
 }
