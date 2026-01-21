@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Default
@@ -9,5 +10,7 @@ namespace Default
         [HideInInspector]
         public Button button => GetComponent<Button>();
         
+        [HideInInspector]
+        public TMP_Text label => GetComponent<TMP_Text>();
     }
 }
