@@ -9,7 +9,7 @@ namespace Default
         public Image image =>GetComponent<Image>();
         
         [HideInInspector]
-        public TMP_Text label =>GetComponentInChildren<TextMeshProUGUI>(true);
+        public TMP_Text label =>GetComponentInChildren<TMP_Text>(true);
 
     }
 }
