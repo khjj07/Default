@@ -2,34 +2,65 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Default
 {
+    [CustomEditor(typeof(DataTableManager))]
+    public class DataTableManagerInspector : Editor
+    {
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+            if (GUILayout.Button("Load DataTable"))
+            {
+                var manager = (DataTableManager)target;
+                manager?.CollectAllDataTable();
+                // 1. 변경사항이 있음을 알림
+                EditorUtility.SetDirty(manager); 
+        
+                // 2. 씬이나 에셋 파일 자체를 저장 (필요 시)
+                AssetDatabase.SaveAssets();
+            }
+        
+        }
+    }
+
     public class DataTableManager : Singleton<DataTableManager>
     {
-        private static Dictionary<Type, List<DataTable>> dataTables;
+        [ReadOnly]  public ReadOnlyList<DataTable> dataTablePool;
+
+        private static Dictionary<Type, List<DataTable>> dataTableDictionary;
+
+        public void CollectAllDataTable()
+        {
+            dataTablePool = new ReadOnlyList<DataTable>();
+            AddressableExtension.LoadAssets<DataTable>("Main", (asset) => { dataTablePool.Add(asset); });
+        }
 
         public static IEnumerator Initialize()
         {
-            dataTables = new Dictionary<Type, List<DataTable>>();
-            var handle = AddressableExtension.LoadAssets<DataTable>("Main", (asset) =>
+            dataTableDictionary = new Dictionary<Type, List<DataTable>>();
+            foreach (var asset in GetInstance().dataTablePool)
             {
-                var type = asset.GetRowTypeName();
-                Debug.Log(type);
-                dataTables.TryAdd(Type.GetType(type), new List<DataTable>() { asset });
-            });
-            yield return handle.Result;
+                var type = asset.rowTypeName;
+                dataTableDictionary.TryAdd(Type.GetType(type), new List<DataTable>() { asset });
+            }
+
+            yield return null;
         }
 
         public static T FindRow<T>(string id) where T : DataTableRowBase
         {
             var typeList = GetDerivedTypes(typeof(T));
             T result = null;
-            
+
             foreach (var type in typeList)
             {
-                var dtList = dataTables[type];
+                var dtList = dataTableDictionary[type];
                 if (dtList != null)
                 {
                     foreach (var dt in dtList)
@@ -48,7 +79,7 @@ namespace Default
 
         private static List<Type> GetDerivedTypes(Type type)
         {
-            var typeList = dataTables.Keys.ToList();
+            var typeList = dataTableDictionary.Keys.ToList();
             var derivedTypeList = typeList.FindAll(type.IsAssignableFrom);
             return derivedTypeList;
         }
@@ -59,7 +90,7 @@ namespace Default
 
             foreach (var type in typeList)
             {
-                var dtList = dataTables[type];
+                var dtList = dataTableDictionary[type];
                 foreach (var dt in dtList)
                 {
                     return dt.Find<T>(predicate);
@@ -68,13 +99,14 @@ namespace Default
 
             return null;
         }
+
         public static List<T> FindAllRow<T>() where T : DataTableRowBase
         {
             var typeList = GetDerivedTypes(typeof(T));
 
             foreach (var type in typeList)
             {
-                var dtList = dataTables[type];
+                var dtList = dataTableDictionary[type];
                 foreach (var dt in dtList)
                 {
                     return dt.FindAll<T>();
@@ -83,13 +115,14 @@ namespace Default
 
             return null;
         }
+
         public static List<T> FindAllRow<T>(Predicate<T> predicate) where T : DataTableRowBase
         {
             var typeList = GetDerivedTypes(typeof(T));
 
             foreach (var type in typeList)
             {
-                var dtList = dataTables[type];
+                var dtList = dataTableDictionary[type];
                 foreach (var dt in dtList)
                 {
                     return dt.FindAll<T>(predicate);

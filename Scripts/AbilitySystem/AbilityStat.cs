@@ -1,16 +1,19 @@
+using System;
+
 namespace Default
 {
 
-
+    [Serializable]
     public class AbilityStat
     {
         public readonly float baseValue;
         public float currentValue;
-        public string name;
-
-        public AbilityStat(string name, float baseValue = 0)
+        public AbilityStat()
         {
-            this.name = name;
+           
+        }
+        public AbilityStat(float baseValue = 0)
+        {
             this.baseValue = baseValue;
             this.currentValue = baseValue;
         }
@@ -29,7 +32,6 @@ namespace Default
         {
             currentValue = baseValue;
         }
-
         
     }
 }

@@ -180,12 +180,25 @@ namespace Default
             return Selection.activeObject is DataTable;
         }
     }
+
+    [CustomEditor(typeof(DataTableRowBase), true)]
+    public class DataTableRowBaseInspector : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            GUI.enabled = false;
+            base.OnInspectorGUI();
+            GUI.enabled = true;
+        }
+    }
+    
 #endif
 
 
     public abstract class DataTableRowBase : ScriptableObject
     {
-        [ReadOnly] public string id;
+        public string id;
+        public bool isEnable;
     }
 
     public class DataTable : ScriptableObject
@@ -333,9 +346,13 @@ namespace Default
             int rowCount = 1;
             foreach (var row in csv)
             {
+                if (bool.Parse(row["isEnable"]) != true)
+                {
+                    continue;
+                }
+                
                 DataTableRowBase asset = dataList.Find(x => x.id == row["id"]);
-
-
+                
                 if (!asset)
                 {
                     asset = CreateInstance(rowScript.GetClass()) as DataTableRowBase;

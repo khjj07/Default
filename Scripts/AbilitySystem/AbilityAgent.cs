@@ -8,26 +8,29 @@ namespace Default
 {
     public class AbilityAgent : MonoBehaviour
     {
-        [SerializeField] PlayerInput playerInput;
-
-        private SortedSet<AbilityStat> stats = new SortedSet<AbilityStat>();
+        private PlayerInput _playerInput;
+        
         public List<AbilityEffectBase> effects = new List<AbilityEffectBase>();
 
-        public void AddStat(AbilityStat stat)
-        {
-            stats.Add(stat);
-        }
+        public IAbilityStats baseAbilityStats;
+        public IAbilityStats currentAbilityStats;
 
-        public void RemoveStat(AbilityStat stat)
+        public void Awake()
         {
-            stats.Remove(stat);
+            _playerInput = FindAnyObjectByType<PlayerInput>();
         }
-
+        
+        public void SetStats(IAbilityStats stats)
+        {
+            baseAbilityStats = stats;
+            currentAbilityStats = stats;
+        }
+        
         public void AddEffect(AbilityEffectBase effect)
         {
             DeactivateAllEffect();
             effects.Add(effect);
-            playerInput.onActionTriggered += effect.OnActionTriggered;
+            _playerInput.onActionTriggered += effect.OnActionTriggered;
             ReorderEffect();
             ResetAllStats();
             ActivateAllEffect();
@@ -37,27 +40,18 @@ namespace Default
         {
             DeactivateAllEffect();
             effects.Remove(effect);
-            playerInput.onActionTriggered -= effect.OnActionTriggered;
+            _playerInput.onActionTriggered -= effect.OnActionTriggered;
             ResetAllStats();
             ActivateAllEffect();
         }
+        
 
-        public AbilityStat GetAgentStat(string name)
-        {
-            return stats.FirstOrDefault(x => x.name == name);
-        }
-
-        public SortedSet<AbilityStat> GetAgentStats()
-        {
-            return stats;
-        }
-
-        public AbilityEffectBase GetAgentEffect(string name)
+        public AbilityEffectBase GetEffect(string name)
         {
             return effects.Find(x => x.name == name);
         }
 
-        public List<AbilityEffectBase> GetAgentEffects(string tag)
+        public List<AbilityEffectBase> GetEffects(string tag)
         {
             return effects.FindAll(x => x.tag.Contains(tag));
         }
@@ -69,7 +63,7 @@ namespace Default
 
         public void ResetAllStats()
         {
-            foreach (var stat in stats)
+            foreach (var stat in baseAbilityStats.Get())
             {
                 stat.Reset();
             }
@@ -90,5 +84,7 @@ namespace Default
                 effect.Deactivate();
             }
         }
+
+     
     }
 }
