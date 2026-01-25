@@ -2,45 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-using UnityEngine;
+using Default;
 
-namespace Default
-{
-#if UNITY_EDITOR
-    [CustomEditor(typeof(DataTableManager))]
-    public class DataTableManagerInspector : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-            if (GUILayout.Button("Load DataTable"))
-            {
-                var manager = (DataTableManager)target;
-                manager?.CollectAllDataTable();
-                // 1. 변경사항이 있음을 알림
-                EditorUtility.SetDirty(manager);
-
-                // 2. 씬이나 에셋 파일 자체를 저장 (필요 시)
-                AssetDatabase.SaveAssets();
-            }
-        }
-    }
-#endif
-
+namespace EFZ
+{ 
     public class DataTableManager : Singleton<DataTableManager>
     {
-        [ReadOnly] public ReadOnlyList<DataTable> dataTablePool;
-
+        public List<DataTable> dataTablePool;
         private static Dictionary<Type, List<DataTable>> dataTableDictionary;
-
-        public void CollectAllDataTable()
-        {
-            dataTablePool = new ReadOnlyList<DataTable>();
-            AddressableExtension.LoadAssets<DataTable>("Main", (asset) => { dataTablePool.Add(asset); });
-        }
 
         public static IEnumerator Initialize()
         {
