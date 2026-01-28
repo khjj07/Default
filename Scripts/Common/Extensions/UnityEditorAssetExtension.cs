@@ -17,28 +17,22 @@ namespace Default
 
             if (selectedObject == null)
             {
-                // ???? ???? ??? ??
                 return null;
             }
-
-            // 1. ??? ??? ??? ?????.
+            
             string path = AssetDatabase.GetAssetPath(selectedObject);
 
             if (string.IsNullOrEmpty(path))
             {
-                // ??? ??? ???? ??
                 return null;
             }
-
-            // 2. ??? ???? ???? ?????.
+            
             if (AssetDatabase.IsValidFolder(path))
             {
-                // ??? ?? ??? ??, ?? ?? ??? ??
                 return path;
             }
             else
             {
-                // ??? ?? ??? ??, ?? ??? ?? ?? ??? ??
                 return Path.GetDirectoryName(path);
             }
         }
@@ -90,6 +84,75 @@ namespace Default
             }
 
             return assets;
+        }
+
+        public static void SaveAsPNG(this Texture2D @this, string path) //metodo que exporta como png
+        {
+            byte[] bytes = @this.EncodeToPNG();
+            File.WriteAllBytes(path, bytes);
+         
+        }
+        
+        public static Sprite ToSprite(this Texture2D @this)
+        {
+          return Sprite.Create(@this, new Rect(0, 0, @this.width, @this.height), new Vector2(0.5f, 0.5f));
+        }
+        
+        
+        public static Texture2D ToTexture2D(this Sprite @this)
+        {
+            var rect = @this.textureRect;
+            var pixels = @this.texture.GetPixels((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
+
+            Texture2D result = new Texture2D((int)rect.width, (int)rect.height);
+            result.SetPixels(pixels);
+            result.Apply();
+        
+            return result;
+        }
+        
+        public static Texture2D TrimTexture(this Texture2D @this)
+        {
+            Color32[] pixels = @this.GetPixels32();
+            int width = @this.width;
+            int height = @this.height;
+
+            // 경계값 초기화
+            int minX = width, minY = height, maxX = 0, maxY = 0;
+            bool hasContent = false;
+
+            // 1. 투명하지 않은 영역의 경계 찾기
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    // alpha가 0보다 크면 내용이 있는 것으로 간주 (임계값 조절 가능)
+                    if (pixels[y * width + x].a > 0)
+                    {
+                        if (x < minX) minX = x;
+                        if (x > maxX) maxX = x;
+                        if (y < minY) minY = y;
+                        if (y > maxY) maxY = y;
+                        hasContent = true;
+                    }
+                }
+            }
+
+            // 만약 완전히 투명한 이미지라면 원본 반환 또는 null
+            if (!hasContent) return null;
+
+            // 2. 잘라낼 영역의 크기 계산
+            int newWidth = maxX - minX + 1;
+            int newHeight = maxY - minY + 1;
+
+            // 3. 새로운 텍스처 생성 및 픽셀 복사
+            Texture2D croppedTexture = new Texture2D(newWidth, newHeight);
+            Color[] newPixels = @this.GetPixels(minX, minY, newWidth, newHeight);
+        
+            croppedTexture.SetPixels(newPixels);
+            croppedTexture.Apply();
+
+            return croppedTexture;
         }
     }
 #endif
