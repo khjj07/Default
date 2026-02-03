@@ -17,7 +17,16 @@ namespace EFZ
             foreach (var asset in GetInstance().dataTablePool)
             {
                 var type = asset.rowTypeName;
-                dataTableDictionary.TryAdd(Type.GetType(type), new List<DataTable>() { asset });
+                var key = Type.GetType(type);
+                if (key != null && dataTableDictionary.ContainsKey(key))
+                {
+                    dataTableDictionary[key].Add(asset);
+                }
+                else
+                {
+                    dataTableDictionary.TryAdd(Type.GetType(type), new List<DataTable>() { asset });
+                }
+               
             }
 
             yield return null;
@@ -70,24 +79,25 @@ namespace EFZ
             return null;
         }
 
-        public static List<T> FindAllRow<T>() where T : DataTableRowBase
+        public static List<T> FindAllRows<T>() where T : DataTableRowBase
         {
+            var result = new List<T>();
             var typeList = GetDerivedTypes(typeof(T));
-
             foreach (var type in typeList)
             {
                 var dtList = dataTableDictionary[type];
                 foreach (var dt in dtList)
                 {
-                    return dt.FindAll<T>();
+                    result.AddRange(dt.FindAll<T>()); 
                 }
             }
 
-            return null;
+            return result;
         }
 
-        public static List<T> FindAllRow<T>(Predicate<T> predicate) where T : DataTableRowBase
+        public static List<T> FindAllRows<T>(Predicate<T> predicate) where T : DataTableRowBase
         {
+            var result = new List<T>();
             var typeList = GetDerivedTypes(typeof(T));
 
             foreach (var type in typeList)
@@ -95,11 +105,11 @@ namespace EFZ
                 var dtList = dataTableDictionary[type];
                 foreach (var dt in dtList)
                 {
-                    return dt.FindAll<T>(predicate);
+                    result.AddRange(dt.FindAll<T>(predicate)); 
                 }
             }
 
-            return null;
+            return result;
         }
     }
 }
