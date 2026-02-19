@@ -40,6 +40,7 @@ namespace Default
     {
         [HideInInspector] public RectTransform rectTransform;
         [HideInInspector] public CanvasGroup canvasGroup;
+        [HideInInspector] public Canvas canvas;
         protected bool isAwake = false;
         public bool isShown => gameObject.activeSelf;
 
@@ -47,6 +48,7 @@ namespace Default
         {
             rectTransform = GetComponent<RectTransform>();
             canvasGroup = GetComponent<CanvasGroup>();
+            canvas = GetComponentInParent<Canvas>();
             isAwake = true;
         }
 
