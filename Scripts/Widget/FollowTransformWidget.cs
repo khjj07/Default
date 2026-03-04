@@ -9,8 +9,8 @@ namespace KCoreKit
 
         public void Follow(UnityEngine.Camera camera, Transform targetTransform)
         {
-            SetPosition(camera, targetTransform.position,offset);
-            SetSize(camera,size);
+            SetPositionAccordingToWorld(camera, targetTransform.position + offset);
+            SetSizeDependOnCamera(camera, size);
         }
     }
 }

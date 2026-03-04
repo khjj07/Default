@@ -62,13 +62,13 @@ namespace KCoreKit
             gameObject.SetActive(true);
         }
         
-        public void SetPosition(UnityEngine.Camera camera, Vector3 position, Vector3 offset)
+        public void SetPositionAccordingToWorld(UnityEngine.Camera camera, Vector3 position)
         {
-            var screenPosition = camera.WorldToScreenPoint(position + offset);
+            var screenPosition = camera.WorldToScreenPoint(position);
             rectTransform.anchoredPosition = screenPosition;
         }
 
-        public void SetSize(UnityEngine.Camera camera, float  size)
+        public void SetSizeDependOnCamera(UnityEngine.Camera camera, float  size)
         {
             float scaleFactor = size / camera.orthographicSize;
             rectTransform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
