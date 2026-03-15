@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace KCoreKit
 {
-    public static class SaveManager
+    public static class SaveSystem
     {
         public static void Save<T>(T data, string fileName, string directory, bool prettyPrint = false) where T : ISerializeData
         {

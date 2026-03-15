@@ -178,7 +178,7 @@ namespace KCoreKit
             return texture;
         }
 
-        [MenuItem("Assets/Default/Copy DataTable", priority = -101)]
+        [MenuItem("Assets/KCoreKit/Copy DataTable", priority = -101)]
         public static void CopyAsset()
         {
             var asset = Selection.activeObject as DataTable;
@@ -188,7 +188,7 @@ namespace KCoreKit
             }
         }
 
-        [MenuItem("Assets/Default/Copy DataTable", true)]
+        [MenuItem("Assets/KCoreKit/Copy DataTable", true)]
         public static bool ValidateCopyAsset()
         {
             return Selection.activeObject is DataTable;
@@ -205,7 +205,7 @@ namespace KCoreKit
         [SerializeField] [HideInInspector] public List<DataTableRowBase> dataList = new List<DataTableRowBase>();
         [ReadOnly] public string rowTypeName;
 #if UNITY_EDITOR
-        [MenuItem("Assets/Default/Create/DataTable")]
+        [MenuItem("Assets/KCoreKit/Create/DataTable")]
         public static void Create()
         {
             TypeExtension.CreateAsset<DataTable>("DataTable");
