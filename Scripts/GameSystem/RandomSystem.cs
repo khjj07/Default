@@ -1,6 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using Random = System.Random;
 
 namespace KCoreKit
 {
@@ -30,6 +31,14 @@ namespace KCoreKit
         public static int RangeInt(int min, int max)
         {
             return random.Next(min, max);
+        }
+
+        public static Vector3 RangeVector3(Vector3 min, Vector3 max)
+        {
+            var x = (float)(random.NextDouble() * (max.x - min.x) + min.x);
+            var y = (float)(random.NextDouble() * (max.y - min.y) + min.y);
+            var z = (float)(random.NextDouble() * (max.z - min.z) + min.z);
+            return new Vector3(x, y, z);
         }
     }
 }
