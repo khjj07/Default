@@ -14,10 +14,13 @@ namespace KCoreKit
         private Sequence _sequence;
         private TextMeshProUGUI _textComponent;
 
+        private bool _isPlaying;
+
         public void Awake()
         {
             _textComponent = GetComponent<TextMeshProUGUI>();
         }
+
         public void PreLoad(string text)
         {
             _letters = GenerateLetter(text);
@@ -32,21 +35,22 @@ namespace KCoreKit
             {
                 builder.Append(letter.value);
             }
+
             return builder.ToString();
         }
 
         public void Print(TweenCallback callback = null)
         {
-            if (_sequence.IsPlaying())
+            if (_isPlaying)
             {
                 return;
             }
+
+            _isPlaying = true;
             _sequence.Play().OnComplete(() =>
             {
-                if (callback != null)
-                {
-                    callback();
-                }
+                _isPlaying = false;
+                callback?.Invoke();
             });
         }
 
@@ -56,7 +60,11 @@ namespace KCoreKit
             {
                 _sequence.Kill();
                 _sequence = null;
+                _isPlaying = false;
             }
+
+            if (_letters == null) return;
+
             foreach (var letter in _letters)
             {
                 letter.KillRepeatTween();
@@ -67,16 +75,24 @@ namespace KCoreKit
         public Sequence GenerateSequence(Letter[] letters)
         {
             var sequence = DOTween.Sequence();
+            
             foreach (var letter in letters)
             {
                 sequence.Append(letter.AppearSequence());
             }
+
+            // After all letters have appeared, start their repeat animations simultaneously
+            var repeatGroup = DOTween.Sequence();
             foreach (var letter in letters)
             {
-                sequence.Append(letter.RepeatSequence());
+                repeatGroup.Append(letter.RepeatSequence());
             }
+
+            sequence.Append(repeatGroup);
+
             return sequence;
         }
+
         public Letter[] GenerateLetter(string text)
         {
             var setting = GlobalPrintSetting.GetInstance();
@@ -117,12 +133,13 @@ namespace KCoreKit
                     }
                 }
             }
+
             return result.ToArray();
         }
 
         private void LateUpdate()
         {
-            if (_textComponent.text.Length > 0)
+            if (_letters != null && _textComponent.text.Length > 0)
             {
                 _textComponent.ForceMeshUpdate();
                 var mesh = _textComponent.mesh;
@@ -141,8 +158,10 @@ namespace KCoreKit
                     Vector3 center = Vector3.zero;
                     float halfHeight, halfWidth;
 
-                    halfHeight = Vector3.Distance(vertices[characterInfo.vertexIndex], vertices[characterInfo.vertexIndex + 1]) / 2;
-                    halfWidth = Vector3.Distance(vertices[characterInfo.vertexIndex + 1], vertices[characterInfo.vertexIndex + 2]) / 2;
+                    halfHeight = Vector3.Distance(vertices[characterInfo.vertexIndex],
+                        vertices[characterInfo.vertexIndex + 1]) / 2;
+                    halfWidth = Vector3.Distance(vertices[characterInfo.vertexIndex + 1],
+                        vertices[characterInfo.vertexIndex + 2]) / 2;
 
                     for (int j = 0; j < 4; j++)
                     {
@@ -150,12 +169,25 @@ namespace KCoreKit
 
                         center += origin;
                     }
+
                     center /= 4;
 
-                    vertices[characterInfo.vertexIndex] = center + _letters[i].position + Quaternion.Euler(_letters[i].rotation) * new Vector3(-halfWidth * _letters[i].scale.x, -halfHeight * _letters[i].scale.y, 0);
-                    vertices[characterInfo.vertexIndex + 1] = center + _letters[i].position + Quaternion.Euler(_letters[i].rotation) * new Vector3(-halfWidth * _letters[i].scale.x, halfHeight * _letters[i].scale.y, 0);
-                    vertices[characterInfo.vertexIndex + 2] = center + _letters[i].position + Quaternion.Euler(_letters[i].rotation) * new Vector3(halfWidth * _letters[i].scale.x, halfHeight * _letters[i].scale.y, 0);
-                    vertices[characterInfo.vertexIndex + 3] = center + _letters[i].position + Quaternion.Euler(_letters[i].rotation) * new Vector3(halfWidth * _letters[i].scale.x, -halfHeight * _letters[i].scale.y, 0);
+                    vertices[characterInfo.vertexIndex] = center + _letters[i].position +
+                                                          Quaternion.Euler(_letters[i].rotation) *
+                                                          new Vector3(-halfWidth * _letters[i].scale.x,
+                                                              -halfHeight * _letters[i].scale.y, 0);
+                    vertices[characterInfo.vertexIndex + 1] = center + _letters[i].position +
+                                                              Quaternion.Euler(_letters[i].rotation) *
+                                                              new Vector3(-halfWidth * _letters[i].scale.x,
+                                                                  halfHeight * _letters[i].scale.y, 0);
+                    vertices[characterInfo.vertexIndex + 2] = center + _letters[i].position +
+                                                              Quaternion.Euler(_letters[i].rotation) *
+                                                              new Vector3(halfWidth * _letters[i].scale.x,
+                                                                  halfHeight * _letters[i].scale.y, 0);
+                    vertices[characterInfo.vertexIndex + 3] = center + _letters[i].position +
+                                                              Quaternion.Euler(_letters[i].rotation) *
+                                                              new Vector3(halfWidth * _letters[i].scale.x,
+                                                                  -halfHeight * _letters[i].scale.y, 0);
                     colors[characterInfo.vertexIndex] = _letters[i].color;
                     colors[characterInfo.vertexIndex + 1] = _letters[i].color;
                     colors[characterInfo.vertexIndex + 2] = _letters[i].color;
@@ -168,6 +200,4 @@ namespace KCoreKit
             }
         }
     }
-
-
 }

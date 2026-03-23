@@ -5,33 +5,45 @@ using UnityEngine;
 namespace KCoreKit
 {
     [Serializable]
-    public class PrintStyleAppearGroup
+    public class PrintStyleScaleModifier
     {
-        public float interval;
-
-        [Header("Scale")]
         public float scaleSpeed = 1;
         public Vector3 beginScale = Vector3.one;
         public Vector3 endScale = Vector3.one;
         public Ease scaleEase;
-
-        [Header("Position")]
+    }
+    
+    [Serializable]
+    public class PrintStylePositionModifier
+    {
         public float positionSpeed = 1;
         public Vector3 beginPosition;
         public Vector3 endPosition;
         public Ease positionEase;
-
-        [Header("Rotation")]
+    }
+    
+    [Serializable]
+    public class PrintStyleRotationModifier
+    {
         public float rotationSpeed = 1;
         public Vector3 beginRotation;
         public Vector3 endRotation;
         public Ease rotationEase;
+    }
 
-        [Header("Color")]
+    [Serializable]
+    public class PrintStyleColorModifier
+    {
         public float colorSpeed = 1;
         public Color beginColor = Color.black;
         public Color endColor = Color.black;
         public Ease colorEase;
+    }
+    
+    [Serializable]
+    public class PrintStyleDetailGroup
+    {
+        public float interval;
 
     }
 }
