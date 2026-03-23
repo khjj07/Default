@@ -64,8 +64,7 @@ namespace KCoreKit
                 );
             }
         }
-
-        // ✅ Double Buffer 적용된 버퍼 업데이트
+        
         public void UpdateDrawBuffers()
         {
             if (instances.Count == 0)
