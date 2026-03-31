@@ -2,14 +2,14 @@ using System;
 using KCoreKit;
 using UnityEngine;
 
-public class LocalizedTextDataTableRow : DataTableRowBase
+public class LocalizedTextDataTableRow : LocalizedDataTableRowBase<string>
 {
     public string EN;
     public string KR;
     public string JP;
     public string CN;
 
-    public string GetText(Language language)
+    public override string Get(Language language)
     {
         return language switch
         {
