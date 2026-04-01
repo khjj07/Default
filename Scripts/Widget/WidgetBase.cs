@@ -1,5 +1,7 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 #if UNITY_EDITOR
 #endif
 
@@ -36,13 +38,20 @@ namespace KCoreKit
 #endif
 
     [RequireComponent(typeof(RectTransform), typeof(CanvasGroup))]
-    public class WidgetBase : MonoBehaviour
+    public class WidgetBase : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler
     {
         [HideInInspector] public RectTransform rectTransform;
         [HideInInspector] public CanvasGroup canvasGroup;
         [HideInInspector] public Canvas canvas;
         protected bool isAwake = false;
         public bool isShown => gameObject.activeSelf;
+
+        public Action<PointerEventData> onPointerClickCallback;
+        public Action<PointerEventData> onPointerEnterCallback;
+        public Action<PointerEventData> onPointerExitCallback;
+        public Action<PointerEventData> onPointerDownCallback;
+        public Action<PointerEventData> onPointerUpCallback;
+        public Action<PointerEventData> onPointerMoveCallback;
 
         public virtual void Awake()
         {
@@ -72,6 +81,36 @@ namespace KCoreKit
         {
             float scaleFactor = size / camera.orthographicSize;
             rectTransform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            onPointerClickCallback?.Invoke(eventData);
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            onPointerEnterCallback?.Invoke(eventData);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            onPointerExitCallback?.Invoke(eventData);
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            onPointerDownCallback?.Invoke(eventData);
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            onPointerUpCallback?.Invoke(eventData);
+        }
+
+        public void OnPointerMove(PointerEventData eventData)
+        {
+            onPointerMoveCallback?.Invoke(eventData);
         }
     }
 }

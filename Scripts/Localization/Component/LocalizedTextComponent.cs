@@ -4,7 +4,7 @@ using UnityEngine;
 namespace KCoreKit
 {
     [RequireComponent(typeof(TMP_Text))]
-    public class LocalizedLabelWidget : LocalizedComponentBase
+    public class LocalizedTextComponent : LocalizedComponentBase
     {
         private TMP_Text _textComponent;
         public string key;
