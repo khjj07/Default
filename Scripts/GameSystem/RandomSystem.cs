@@ -57,10 +57,16 @@ namespace KCoreKit
 
         public static Vector3 RangeVector3(Vector3 min, Vector3 max)
         {
-            var x = Next() * (max.x - min.x) + min.x;
-            var y = Next() * (max.y - min.y) + min.y;
-            var z = Next() * (max.z - min.z) + min.z;
+            var x = (float)(NextDouble() * (max.x - min.x) + min.x);
+            var y = (float)(NextDouble() * (max.y - min.y) + min.y);
+            var z = (float)(NextDouble() * (max.z - min.z) + min.z);
             return new Vector3(x, y, z);
+        }
+
+        private static double NextDouble()
+        {
+            _counter++;
+            return _random.NextDouble();
         }
 
         public static float Next()
