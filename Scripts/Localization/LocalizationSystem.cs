@@ -30,10 +30,10 @@ namespace KCoreKit
         public override IEnumerator OnInitialize()
         {
             var dataTableSystem = GameSystem.GetSubSystem<DataTableSystem>();
-            _textDataTableRows = dataTableSystem.FindAllRows<LocalizedTextDataTableRow>();
-            _fontDataTableRows = dataTableSystem.FindAllRows<LocalizedFontDataTableRow>();
-            _spriteDataTableRows = dataTableSystem.FindAllRows<LocalizedSpriteDataTableRow>();
-            _prefabDataTableRows = dataTableSystem.FindAllRows<LocalizedPrefabDataTableRow>();
+            _textDataTableRows = dataTableSystem?.FindAllRows<LocalizedTextDataTableRow>();
+            _fontDataTableRows = dataTableSystem?.FindAllRows<LocalizedFontDataTableRow>();
+            _spriteDataTableRows = dataTableSystem?.FindAllRows<LocalizedSpriteDataTableRow>();
+            _prefabDataTableRows = dataTableSystem?.FindAllRows<LocalizedPrefabDataTableRow>();
             SetLanguage(defaultLanguage);
             yield return null;
         }
