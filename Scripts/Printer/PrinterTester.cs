@@ -17,8 +17,8 @@ namespace KCoreKit
         {
             _printer = GetComponent<Printer>();
             _printer.Stop();
-            _printer.PreLoad(text);
-            _printer.Print(() => { Debug.Log("end"); });
+            _printer.Setup(text);
+            _printer.Print(0,() => { Debug.Log("end"); });
         }
     }
 }

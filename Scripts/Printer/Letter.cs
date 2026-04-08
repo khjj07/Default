@@ -20,8 +20,9 @@ namespace KCoreKit
         public Tween repeatRotationTween;
         public Tween repeatColorTween;
 
-        public Letter(char value, PrintStyle style)
+        public Letter(char value, PrintStyle style,Color color)
         {
+            this.color = color;
             this.value = value;
             this.style = style;
         }
@@ -29,7 +30,6 @@ namespace KCoreKit
         public Sequence AppearSequence()
         {
             var sequence = DOTween.Sequence();
-            
             if (style.appearOption.usePosition)
             {
                 position = style.appearPosition.beginPosition;

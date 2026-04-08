@@ -12,16 +12,16 @@ namespace KCoreKit
     {
         private Letter[] _letters;
         private Sequence _sequence;
-        private TextMeshProUGUI _textComponent;
+        private TMP_Text _textComponent;
 
         private bool _isPlaying;
 
         public void Awake()
         {
-            _textComponent = GetComponent<TextMeshProUGUI>();
+            _textComponent = GetComponent<TMP_Text>();
         }
 
-        public void PreLoad(string text)
+        public void Setup(string text)
         {
             _letters = GenerateLetter(text);
             _textComponent.text = GenerateText();
@@ -39,7 +39,7 @@ namespace KCoreKit
             return builder.ToString();
         }
 
-        public void Print(TweenCallback callback = null)
+        public void Print(float delay = 0,TweenCallback callback = null)
         {
             if (_isPlaying)
             {
@@ -47,7 +47,7 @@ namespace KCoreKit
             }
 
             _isPlaying = true;
-            _sequence.Play().OnComplete(() =>
+            _sequence.SetDelay(delay).Play().OnComplete(() =>
             {
                 _isPlaying = false;
                 callback?.Invoke();
@@ -75,7 +75,7 @@ namespace KCoreKit
         public Sequence GenerateSequence(Letter[] letters)
         {
             var sequence = DOTween.Sequence();
-            
+
             foreach (var letter in letters)
             {
                 sequence.Append(letter.AppearSequence());
@@ -114,14 +114,14 @@ namespace KCoreKit
                         PrintStyle style = setting.FindDialogStyle(sytleName);
                         foreach (var c in value)
                         {
-                            result.Add(new Letter(c, style));
+                            result.Add(new Letter(c, style, _textComponent.color));
                         }
                     }
                     else
                     {
                         foreach (var c in value)
                         {
-                            result.Add(new Letter(c, setting.defaultStyle));
+                            result.Add(new Letter(c, setting.defaultStyle, _textComponent.color));
                         }
                     }
                 }
@@ -129,7 +129,7 @@ namespace KCoreKit
                 {
                     foreach (var c in match.Value)
                     {
-                        result.Add(new Letter(c, setting.defaultStyle));
+                        result.Add(new Letter(c, setting.defaultStyle, _textComponent.color));
                     }
                 }
             }
