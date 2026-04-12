@@ -41,8 +41,7 @@ namespace KCoreKit
             if (style.appearOption.useScale)
             {
                 scale = style.appearScale.beginScale;
-                sequence.Join(DOTween
-                    .To(() => scale, x => scale = x, style.appearScale.endScale,
+                sequence.Join(DOTween.To(() => scale, x => scale = x, style.appearScale.endScale,
                         style.appearOption.interval / style.appearScale.scaleSpeed)
                     .SetEase(style.appearScale.scaleEase));
             }

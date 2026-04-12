@@ -11,21 +11,19 @@ namespace KCoreKit
     public class Printer : MonoBehaviour
     {
         private Letter[] _letters;
-        private Sequence _sequence;
+        private Sequence _appearSequence;
+        private Sequence _repeatSequence;
         private TMP_Text _textComponent;
-
         private bool _isPlaying;
 
-        public void Awake()
-        {
-            _textComponent = GetComponent<TMP_Text>();
-        }
 
         public void Setup(string text)
         {
+            _textComponent = GetComponent<TMP_Text>();
             _letters = GenerateLetter(text);
             _textComponent.text = GenerateText();
-            _sequence = GenerateSequence(_letters);
+            _appearSequence = GenerateAppearSequence(_letters);
+            _repeatSequence = GenerateRepeatSequence(_letters);
         }
 
         private string GenerateText()
@@ -47,22 +45,30 @@ namespace KCoreKit
             }
 
             _isPlaying = true;
-            _sequence.SetDelay(delay).Play().OnComplete(() =>
+            _appearSequence.OnComplete(() =>
             {
                 _isPlaying = false;
+                _repeatSequence.Play();
                 callback?.Invoke();
             });
+            _appearSequence.SetDelay(delay).Play();
         }
 
         public void Stop()
         {
-            if (_sequence != null)
+            if (_appearSequence != null)
             {
-                _sequence.Kill();
-                _sequence = null;
-                _isPlaying = false;
+                _appearSequence.Kill();
+                _appearSequence = null;
             }
 
+            if (_repeatSequence != null)
+            {
+                _repeatSequence.Kill();
+                _repeatSequence = null;
+            }
+
+            _isPlaying = false;
             if (_letters == null) return;
 
             foreach (var letter in _letters)
@@ -72,24 +78,23 @@ namespace KCoreKit
         }
 
 
-        public Sequence GenerateSequence(Letter[] letters)
+        public Sequence GenerateAppearSequence(Letter[] letters)
         {
             var sequence = DOTween.Sequence();
-
             foreach (var letter in letters)
             {
                 sequence.Append(letter.AppearSequence());
             }
-
-            // After all letters have appeared, start their repeat animations simultaneously
-            var repeatGroup = DOTween.Sequence();
+            return sequence;
+        }
+        
+        private Sequence GenerateRepeatSequence(Letter[] letters)
+        {
+            var sequence = DOTween.Sequence();
             foreach (var letter in letters)
             {
-                repeatGroup.Append(letter.RepeatSequence());
+                sequence.Append(letter.RepeatSequence());
             }
-
-            sequence.Append(repeatGroup);
-
             return sequence;
         }
 

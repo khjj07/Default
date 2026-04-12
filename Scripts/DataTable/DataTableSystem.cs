@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Mono.Cecil;
 using UnityEngine;
 
 namespace KCoreKit
@@ -9,8 +10,14 @@ namespace KCoreKit
     public class DataTableSystem : GameSubSystemBase
     {
         [SerializeField]
-        private List<DataTable> dataTables = new List<DataTable>();
+        private DataTable[] dataTables;
         private static Dictionary<Type, List<DataTable>> _dataTableDictionary;
+
+        public void Awake()
+        {
+            dataTables = Resources.LoadAll<DataTable>("");
+        }
+        
         public T FindRow<T>(string id) where T : DataTableRowBase
         {
             var typeList = GetDerivedTypes(typeof(T));

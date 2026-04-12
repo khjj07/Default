@@ -63,7 +63,7 @@ namespace KCoreKit
             return new Vector3(x, y, z);
         }
 
-        private static double NextDouble()
+        public static double NextDouble()
         {
             _counter++;
             return _random.NextDouble();
